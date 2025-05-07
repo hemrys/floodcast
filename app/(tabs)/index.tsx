@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Platform, TouchableOpacity, Alert, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker, PROVIDER_GOOGLE, Circle } from 'react-native-maps';
+import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -28,7 +28,7 @@ export default function HomeScreen() {
   const [userLocation, setUserLocation] = useState<LocationObject | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedArea, setSelectedArea] = useState<FloodRiskArea | null>(null);
-  // get flood data from our hook
+  // get flood data from hook
   const { data: floodRiskAreas, loading } = useFloodData();
   
   // Malmö, Sweden coordinates
@@ -49,10 +49,12 @@ export default function HomeScreen() {
     }
   };
 
-  // Function to center map on user's location
+  
+
+  // function to center map on user's location
   const centerOnUser = async () => {
     try {
-      // Request permission
+      // request permission
       const { status } = await Location.requestForegroundPermissionsAsync();
 
       if (status !== 'granted') {
@@ -60,18 +62,18 @@ export default function HomeScreen() {
         return;
       }
 
-      // Get location
+      // get a single location update instead of continuous updates(get vs watch fixed blinking issue on osm)
       const currentLocation = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced
       });
 
-      // Update state and center map with more zoom
+      // update state and center map with more zoom
       setUserLocation(currentLocation);
       setRegion({
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
-        latitudeDelta: 0.01, // More zoomed in (smaller value = more zoom)
-        longitudeDelta: 0.01, // More zoomed in (smaller value = more zoom)
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
       });
     } catch (error: any) {
       Alert.alert('Error', 'Could not get your location. Please try again.');
@@ -85,8 +87,8 @@ export default function HomeScreen() {
         style={StyleSheet.absoluteFillObject}
         region={region}
         onRegionChangeComplete={setRegion}
-        // defaults to Apple Maps on iOS
-        provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
+        // defaults to Apple Maps on iOS osm on android
+        provider={undefined}
         customMapStyle={colorScheme === 'dark' ? mapDarkStyle : []}
         showsUserLocation={false}
         showsMyLocationButton={false}
