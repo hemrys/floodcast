@@ -1,0 +1,2 @@
+build apk 
+npx eas build --profile preview-apk --platform android
