@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (username: string, password: string) => {
-    // in a real app we'd call an api here
+    // in a real app we'd call an api here, waiting for back end
     // for now just store a fake token
     try {
       await AsyncStorage.setItem('userToken', 'dummy-auth-token');
@@ -59,6 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// custom hook to avoid doing the undefined check on every call later on
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

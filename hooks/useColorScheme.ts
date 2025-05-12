@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 type ColorSchemeType = 'light' | 'dark' | null;
 
 // Store the current theme preference
+// need to edit it when we start getting real data from backend api to load user pref.
 let currentThemePreference: ColorSchemeType = null;
 
 // Create a list of subscribers to notify when the theme changes
