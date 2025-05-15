@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import * as Location from 'expo-location';
 import { showAlert } from '@/utils/alert';
 import { LocationObject, Region } from '@/types';
@@ -6,8 +6,54 @@ import { LocationObject, Region } from '@/types';
 export function useLocation() {
   const [userLocation, setUserLocation] = useState<LocationObject | null>(null);
   const lastLocationRequest = useRef<number>(0);
+  const locationSubscription = useRef<Location.LocationSubscription | null>(null);
 
-  const centerOnUser = async (setRegion: (region: Region) => void): Promise<boolean> => {
+  // Start watching location when component mounts
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        return;
+      }
+
+      // Get initial location
+      try {
+        const initialLocation = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High
+        });
+        setUserLocation(initialLocation);
+        lastLocationRequest.current = Date.now();
+      } catch (err) {
+        console.error('Error getting initial location:', err);
+      }
+
+      // Start watching location
+      const subscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          distanceInterval: 5, // Update if device moves by 5 meters
+          timeInterval: 3000 // Or every 3 seconds
+        },
+        (location) => {
+          setUserLocation(location);
+          lastLocationRequest.current = Date.now();
+        }
+      );
+
+      locationSubscription.current = subscription;
+
+      // Clean up subscription on unmount
+      return () => {
+        if (subscription) {
+          subscription.remove();
+        }
+      };
+    })();
+  }, []);
+
+  const centerOnUser = async (
+    setRegionCallback: (region: Region) => void
+  ): Promise<boolean> => {
     try {
       // Check if we have a recent location (within the last 10 seconds)
       const now = Date.now();
@@ -15,11 +61,11 @@ export function useLocation() {
 
       if (useCache) {
         console.log('Using cached location');
-        setRegion({
+        setRegionCallback({
           latitude: userLocation.coords.latitude,
           longitude: userLocation.coords.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+          latitudeDelta: 0.005, // Zoom in more
+          longitudeDelta: 0.005,
         });
         return true;
       }
@@ -33,19 +79,18 @@ export function useLocation() {
       }
 
       const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Low,
-        mayShowUserSettingsDialog: false
+        accuracy: Location.Accuracy.High
       });
 
       // Update the timestamp
       lastLocationRequest.current = now;
 
       setUserLocation(currentLocation);
-      setRegion({
+      setRegionCallback({
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: 0.005, // Zoom in more
+        longitudeDelta: 0.005,
       });
 
       return true;

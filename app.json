@@ -52,14 +52,22 @@
       [
         "expo-location",
         {
+          "locationWhenInUsePermission": "Show current location on map.",
           "locationAlwaysAndWhenInUsePermission": "Allow FloodCast to use your location to show nearby flood risks."
         }
       ],
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/notification-icon.png",
+          "icon": "./assets/images/floodcast-logo.png",
           "color": "#101d2a"
+        }
+      ],
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapBoxVersion" : "11.0.0",
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiaGVtcnlzIiwiYSI6ImNtYXB3anpuNzAzdWYyanJ6NHBka3E5MGEifQ.3TrTwH2IMV_oaBmZxkCyXg"
         }
       ]
     ],
@@ -74,9 +82,7 @@
         "projectId": "fd631fd1-eadf-4299-ae85-1d055bed0dd4"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/fd631fd1-eadf-4299-ae85-1d055bed0dd4"
     }

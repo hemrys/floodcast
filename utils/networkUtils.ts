@@ -13,6 +13,7 @@ export function getApiBaseUrl(): string {
   //10.2.2.2 for simulator
   // need a library to automatically get this address
   const LOCAL_IP = "192.168.51.142";
+  // const LOCAL_IP = "10.2.2.2";
   const PORT = 3000;
 
   return Platform.select({
