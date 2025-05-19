@@ -5,56 +5,62 @@ import { LocationObject, Region } from '@/types';
 
 export function useLocation() {
   const [userLocation, setUserLocation] = useState<LocationObject | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
   const lastLocationRequest = useRef<number>(0);
+  const locationCache = useRef<LocationObject | null>(null);
 
   const centerOnUser = async (setRegion: (region: Region) => void): Promise<boolean> => {
-    try {
-      // Check if we have a recent location (within the last 10 seconds)
-      const now = Date.now();
-      const useCache = userLocation && (now - lastLocationRequest.current < 10000);
+    if (isLocating) return false;
 
-      if (useCache) {
-        console.log('Using cached location');
+    try {
+      setIsLocating(true);
+      const now = Date.now();
+      const useCache = userLocation && (now - lastLocationRequest.current < 5000);
+
+      if (useCache && locationCache.current) {
         setRegion({
-          latitude: userLocation.coords.latitude,
-          longitude: userLocation.coords.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+          latitude: locationCache.current.coords.latitude,
+          longitude: locationCache.current.coords.longitude,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
         });
+        setIsLocating(false);
         return true;
       }
 
-      // Otherwise get a new location
       const { status } = await Location.requestForegroundPermissionsAsync();
 
       if (status !== 'granted') {
         showAlert('Permission Denied', 'Location permission is required to use this feature.', 'warning');
+        setIsLocating(false);
         return false;
       }
 
       const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Low,
-        mayShowUserSettingsDialog: false
+        accuracy: Location.Accuracy.Balanced,
+        mayShowUserSettingsDialog: false,
+        timeInterval: 1000
       });
 
-      // Update the timestamp
       lastLocationRequest.current = now;
-
+      locationCache.current = currentLocation;
       setUserLocation(currentLocation);
+
       setRegion({
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
       });
 
+      setIsLocating(false);
       return true;
     } catch (error) {
       showAlert('Error', 'Could not get your location. Please try again.', 'error');
-      console.error(error);
+      setIsLocating(false);
       return false;
     }
   };
 
-  return { userLocation, centerOnUser };
+  return { userLocation, isLocating, centerOnUser };
 }

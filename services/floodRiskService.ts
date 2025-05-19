@@ -282,7 +282,7 @@ export const floodRiskService = {
   },
 
   async updateUserLocation(location: { latitude: number; longitude: number }): Promise<void> {
-    console.log('Updating user location:', location);
+    // API call will be implemented in future
   }
 };
 

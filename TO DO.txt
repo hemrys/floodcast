@@ -1,2 +1,3 @@
 -use securestorage instead of async
 
+Fix inconsistent centre on user function.

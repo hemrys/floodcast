@@ -25,7 +25,6 @@ export function getApiBaseUrl(): string {
   return Platform.select({
     web: `http://localhost:${PORT}`,
     ios: `http://localhost:${PORT}`,
-    // IMPORTANT For Android physical devices, use the computer's IPv 4  address
     android: `http://${LOCAL_IP}:${PORT}`,
   }) || `http://${LOCAL_IP}:${PORT}`;
 }
@@ -33,14 +32,10 @@ export function getApiBaseUrl(): string {
 
 export async function isServerReachable(baseUrl: string = getApiBaseUrl(), timeout: number = 5000): Promise<boolean> {
   try {
-    // Use a simple health check endpoint that should be available
     const url = `${baseUrl}/health`;
-    console.log(`Checking if server is reachable at: ${url}`);
 
-    // Check network connectivity first
     const connected = await isConnected();
     if (!connected) {
-      console.error('No network connection available');
       return false;
     }
 

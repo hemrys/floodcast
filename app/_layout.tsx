@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '@/context/AuthContext';
+import { OnboardingProvider } from '@/context/OnboardingContext';
 import CustomAlert from '@/components/CustomAlert';
 
 // keep splash screen visible until we're ready
@@ -31,17 +32,19 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="login" />
-          <Stack.Screen name="signup" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        {/* Global custom alert component */}
-        <CustomAlert />
-      </ThemeProvider>
+      <OnboardingProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="login" />
+            <Stack.Screen name="signup" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          {/* Global custom alert component */}
+          <CustomAlert />
+        </ThemeProvider>
+      </OnboardingProvider>
     </AuthProvider>
   );
 }

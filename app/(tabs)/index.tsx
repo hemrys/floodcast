@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Platform, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { Platform, TouchableOpacity, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker, PROVIDER_GOOGLE, Circle } from 'react-native-maps';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -16,9 +16,8 @@ export default function HomeScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedArea, setSelectedArea] = useState<FloodRiskArea | null>(null);
   const { data: floodRiskAreas } = useFloodData();
-  const { userLocation, centerOnUser } = useLocation();
+  const { userLocation, isLocating, centerOnUser } = useLocation();
 
-  // Malmö, Sweden coordinates
   const [region, setRegion] = useState<Region>({
     latitude: 55.6050,
     longitude: 13.0038,
@@ -32,7 +31,6 @@ export default function HomeScreen() {
         style={StyleSheet.absoluteFillObject}
         region={region}
         onRegionChangeComplete={setRegion}
-        // defaults to Apple Maps on iOS
         provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
         customMapStyle={colorScheme === 'dark' ? mapDarkStyle : []}
         showsUserLocation={false}
@@ -73,17 +71,21 @@ export default function HomeScreen() {
         )}
       </MapView>
 
-      {/* center to user location icon  */}
       <TouchableOpacity
         className={`absolute bottom-24 right-4 w-12 h-12 rounded-full justify-center items-center shadow-md ${colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}
         onPress={() => centerOnUser(setRegion)}
         activeOpacity={0.7}
+        disabled={isLocating}
       >
-        <IconSymbol
-          name="location.fill"
-          size={24}
-          color={colorScheme === 'dark' ? '#ffffff' : '#000000'}
-        />
+        {isLocating ? (
+          <ActivityIndicator size="small" color={colorScheme === 'dark' ? '#ffffff' : '#000000'} />
+        ) : (
+          <IconSymbol
+            name="location.fill"
+            size={24}
+            color={colorScheme === 'dark' ? '#ffffff' : '#000000'}
+          />
+        )}
       </TouchableOpacity>
 
       <FloodRiskModal
@@ -94,10 +96,6 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-
-
-
 
 
 

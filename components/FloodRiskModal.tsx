@@ -1,4 +1,4 @@
-import { View, Text, Modal, ScrollView } from 'react-native';
+import { View, Text, Modal, ScrollView, Linking } from 'react-native';
 import { FloodRiskArea } from '@/types';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import {
@@ -29,7 +29,25 @@ export function FloodRiskModal({ visible, selectedArea, onClose }: FloodRiskModa
   };
 
   const handleEmergencyCall = () => {
-    // Handle emergency call logic
+    // Extract the first phone number from emergency contacts
+    const emergencyText = selectedArea.detailedInfo.emergencyContacts;
+    const phoneMatch = emergencyText.match(/\d{3,}/);
+    
+    if (phoneMatch) {
+      const phoneNumber = phoneMatch[0];
+      Linking.canOpenURL(`tel:${phoneNumber}`)
+        .then(supported => {
+          if (supported) {
+            Linking.openURL(`tel:${phoneNumber}`);
+          } else {
+            console.log(`Phone dialing not supported for: ${phoneNumber}`);
+          }
+        })
+        .catch(err => console.error('Error initiating phone call:', err));
+    } else {
+      // Fallback to emergency number if no phone found in contacts
+      Linking.openURL('tel:112');
+    }
   };
 
   return (

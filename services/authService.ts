@@ -62,16 +62,9 @@ export const authService = {
     }
 
     if (isTokenExpired(token)) {
-      console.log('Token is expired, attempting to refresh');
-      try {
-        // Try to refresh the token if it's expired
-        const newToken = await this.refreshToken(token);
-        return newToken;
-      } catch (error) {
-        console.error('Failed to refresh token:', error);
-        await this.setToken(null);
-        return null;
-      }
+      console.log('Token is expired, clearing it and forcing re-login');
+      await this.setToken(null);
+      return null;
     }
 
     return token;
@@ -82,32 +75,6 @@ export const authService = {
       await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
     } else {
       await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
-    }
-  },
-
-  async refreshToken(oldToken: string): Promise<string | null> {
-    try {
-      console.log('Attempting to refresh token');
-
-      // Call the refresh token endpoint
-      const response = await api.post<{ token: string }>('/refresh-token', {}, {
-        headers: {
-          Authorization: `Bearer ${oldToken}`
-        }
-      });
-
-      if (response && response.token) {
-        console.log('Token refreshed successfully');
-        await this.setToken(response.token);
-        return response.token;
-      }
-
-      throw new Error('No token received from refresh endpoint');
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      // If refresh fails, clear the token and force re-login
-      await this.setToken(null);
-      return null;
     }
   },
 
@@ -314,20 +281,15 @@ export const authService = {
       const token = await this.getToken();
 
       if (!token) {
-        console.log('No token available, user is not authenticated');
         return null;
       }
 
-      console.log('Fetching current user info');
       const user = await api.get<User>('/login/me');
-      console.log('Current user info received');
       return user;
     } catch (error) {
       console.error('Get current user failed:', error);
 
-      // If we get a 401 Unauthorized, the token is invalid
       if (error instanceof Error && error.name === 'ApiError' && (error as any).status === 401) {
-        console.log('Token is invalid, clearing it');
         await this.setToken(null);
       }
 

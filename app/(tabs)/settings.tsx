@@ -1,18 +1,22 @@
-import { Switch, Text, View, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { Switch, Text, View, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import { useColorScheme, setColorScheme } from '@/hooks/useColorScheme';
 import { useAuth } from '@/context/AuthContext';
+import { useOnboarding } from '@/context/OnboardingContext';
 import { router } from 'expo-router';
 import { SettingItem } from '@/components/ui/SettingItem';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { LogoutButton } from '@/components/ui/LogoutButton';
+import { showAlert } from '@/utils/alert';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [locationEnabled, setLocationEnabled] = useState(false);
+  const [startingTour, setStartingTour] = useState(false);
   const { logout } = useAuth();
+  const { setIsFirstTime, setCurrentStep } = useOnboarding();
 
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === 'dark');
 
@@ -88,6 +92,49 @@ export default function SettingsScreen() {
                 thumbColor={locationEnabled ? '#ffffff' : '#f4f3f4'}
                 ios_backgroundColor="#3e3e3e"
               />
+            }
+          />
+        </View>
+
+        <View className="mb-6">
+          <SectionHeader title="Help & Support" />
+          <SettingItem
+            icon="book"
+            title="App Tutorial"
+            description="Restart the interactive onboarding tour"
+            control={
+              <TouchableOpacity
+                className="bg-modern-purple rounded-lg px-3 py-1.5"
+                onPress={() => {
+                  if (startingTour) return; // Prevent multiple clicks
+
+                  setStartingTour(true);
+                  setCurrentStep(0); // Reset to first step
+
+                  // Show feedback to the user
+                  showAlert(
+                    "Starting Tour",
+                    "Navigating to the home screen to begin the tour...",
+                    "info"
+                  );
+
+                  // Navigate to the Home tab first, then start the onboarding tour
+                  router.replace("/(tabs)");
+
+                  // Use a slightly longer delay to ensure navigation completes before showing the tour
+                  setTimeout(() => {
+                    setIsFirstTime(true);
+                    setStartingTour(false);
+                  }, 500);
+                }}
+                disabled={startingTour}
+              >
+                {startingTour ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text className="text-white font-medium">Start</Text>
+                )}
+              </TouchableOpacity>
             }
           />
         </View>

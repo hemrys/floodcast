@@ -3,14 +3,11 @@ import { floodRiskAreas as mockData } from '@/data/floodRiskData';
 import { floodRiskService } from '@/services/floodRiskService';
 import { showAlert } from '@/utils/alert';
 import { FloodRiskArea, LocationQuery } from '@/types';
-
-// Hook to fetch flood risk data from the PostgreSQL database
 export function useFloodData() {
   const [data, setData] = useState<FloodRiskArea[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Generic fetch function to reduce duplication
   const fetchFloodData = useCallback(async (
     fetchFn: () => Promise<FloodRiskArea[]>,
     errorMsg: string
@@ -24,9 +21,6 @@ export function useFloodData() {
     } catch (err) {
       console.error(errorMsg, err);
       showAlert("Couldn't load flood data", "Please check your connection and try again", "warning");
-
-      // Fallback to mock data in case of error
-      console.log("Using mock data as fallback");
       setData(mockData);
       setError(errorMsg);
     } finally {
@@ -34,7 +28,6 @@ export function useFloodData() {
     }
   }, []);
 
-  // Fetch all flood risk areas
   const fetchFloodRisks = useCallback(() => {
     return fetchFloodData(
       () => floodRiskService.getFloodRisks(),
@@ -42,7 +35,6 @@ export function useFloodData() {
     );
   }, [fetchFloodData]);
 
-  // Fetch flood risk areas by location
   const fetchFloodRisksByLocation = useCallback((location: LocationQuery) => {
     return fetchFloodData(
       () => floodRiskService.getFloodRisksByLocation(location),
@@ -50,7 +42,6 @@ export function useFloodData() {
     );
   }, [fetchFloodData]);
 
-  // Fetch a specific flood risk area by ID
   const fetchFloodRiskById = useCallback(async (id: number) => {
     try {
       return await floodRiskService.getFloodRiskById(id);
@@ -61,7 +52,6 @@ export function useFloodData() {
     }
   }, []);
 
-  // Update user location for location-based alerts
   const updateUserLocation = useCallback(async (location: { latitude: number; longitude: number }) => {
     try {
       await floodRiskService.updateUserLocation(location);
@@ -72,7 +62,6 @@ export function useFloodData() {
     }
   }, []);
 
-  // Fetch all flood risk areas on mount
   useEffect(() => {
     fetchFloodRisks();
   }, [fetchFloodRisks]);
