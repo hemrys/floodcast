@@ -4,6 +4,7 @@ import { FloodRiskArea, floodRiskAreas as mockData } from '@/data/floodRiskData'
 import { floodRiskService, LocationQuery } from '@/services/floodRiskService';
 
 // Hook to fetch flood risk data from the PostgreSQL database
+// TEMPORARILY USING MOCK DATA ONLY
 export function useFloodData() {
   const [data, setData] = useState<FloodRiskArea[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,8 +16,12 @@ export function useFloodData() {
     setError(null);
 
     try {
-      const floodRisks = await floodRiskService.getFloodRisks();
-      setData(floodRisks);
+      // TEMPORARILY DISABLED: Real API call
+      // const floodRisks = await floodRiskService.getFloodRisks();
+
+      // Using mock data directly
+      console.log("USING MOCK DATA: Real API calls temporarily disabled");
+      setData(mockData);
     } catch (err) {
       console.error("Failed to load flood risk data:", err);
       Alert.alert("Couldn't load flood data", "Please check your connection and try again");
@@ -37,8 +42,12 @@ export function useFloodData() {
     setError(null);
 
     try {
-      const floodRisks = await floodRiskService.getFloodRisksByLocation(location);
-      setData(floodRisks);
+      // TEMPORARILY DISABLED: Real API call
+      // const floodRisks = await floodRiskService.getFloodRisksByLocation(location);
+
+      // Using mock data directly
+      console.log("USING MOCK DATA: Real API calls temporarily disabled");
+      setData(mockData);
     } catch (err) {
       console.error("Failed to load flood risk data by location:", err);
       Alert.alert("Couldn't load flood data", "Please check your connection and try again");
@@ -56,7 +65,12 @@ export function useFloodData() {
   // Fetch a specific flood risk area by ID
   const fetchFloodRiskById = useCallback(async (id: number) => {
     try {
-      return await floodRiskService.getFloodRiskById(id);
+      // TEMPORARILY DISABLED: Real API call
+      // return await floodRiskService.getFloodRiskById(id);
+
+      // Using mock data directly
+      console.log(`USING MOCK DATA: Fetching flood risk with ID ${id}`);
+      return mockData.find(area => area.id === id) || null;
     } catch (err) {
       console.error(`Failed to fetch flood risk with ID ${id}:`, err);
       Alert.alert("Error", `Failed to fetch flood risk with ID ${id}.`);
@@ -67,7 +81,10 @@ export function useFloodData() {
   // Update user location for location-based alerts
   const updateUserLocation = useCallback(async (location: { latitude: number; longitude: number }) => {
     try {
-      await floodRiskService.updateUserLocation(location);
+      // TEMPORARILY DISABLED: Real API call
+      // await floodRiskService.updateUserLocation(location);
+
+      console.log("USING MOCK DATA: User location update simulated", location);
       return true;
     } catch (err) {
       console.error("Failed to update user location:", err);
