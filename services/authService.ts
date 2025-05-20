@@ -16,7 +16,7 @@ interface RegisterData {
   name: string;
   email: string;
   password: string;
-  role_id: number;
+  role_id?: number; // Make role_id optional since backend assigns it automatically
 }
 
 interface AuthResponse {
@@ -142,12 +142,12 @@ export const authService = {
     try {
       console.log('Attempting to register user:', { email: data.email });
 
-      // Send registration request to the backend
-      const response = await api.post<{ message: string }>('/register', {
+      // Send registration request to the backend - only send the fields the backend expects
+      const response = await api.post<{ message: string, user: User }>('/register', {
         name: data.name,
         email: data.email,
-        password: data.password,
-        role_id: data.role_id
+        password: data.password
+        // Don't send role_id - backend will assign it automatically
       });
 
       console.log('Registration successful:', response.message || 'User registered');
@@ -165,8 +165,10 @@ export const authService = {
 
           // Handle specific API error codes
           if (apiError.status === 400) {
-            if (apiError.message.includes('email') || apiError.data?.errors?.email) {
-              errorMessage = 'This email is already registered or invalid. Please use a different email.';
+            if (apiError.message.includes('E-postadressen är redan registrerad') ||
+                apiError.message.includes('email') ||
+                apiError.data?.errors?.email) {
+              errorMessage = 'This email is already registered. Please use a different email or try to log in.';
             } else if (apiError.message.includes('password') || apiError.data?.errors?.password) {
               errorMessage = 'Password does not meet requirements. Please use a stronger password.';
             } else {

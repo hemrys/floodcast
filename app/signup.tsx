@@ -24,6 +24,7 @@ export default function SignupScreen() {
   };
 
   const handleSignup = async () => {
+    // Validate input fields
     if (!name.trim()) {
       showAlert('Missing Information', 'Please enter your name', 'warning');
       return;
@@ -47,9 +48,26 @@ export default function SignupScreen() {
     try {
       setIsLoading(true);
       console.log('Attempting to register user:', { name, email });
+
+      // Register the user
       await register(name, email, password);
-      showAlert('Registration Successful', 'Your account has been created. Please log in.', 'success');
-      router.replace('/login');
+
+      // Show success message
+      showAlert(
+        'Registration Successful',
+        'Your account has been created. You will now be redirected to the login page.',
+        'success'
+      );
+
+      // Clear form fields
+      setName('');
+      setEmail('');
+      setPassword('');
+
+      // Redirect to login page after a short delay to allow the user to see the success message
+      setTimeout(() => {
+        router.replace('/login');
+      }, 1500);
     } catch (error) {
       console.error('Registration failed:', error);
       const message = error instanceof Error ? error.message : 'An unexpected error occurred';

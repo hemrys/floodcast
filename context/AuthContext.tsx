@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const register = async (name: string, email: string, password: string) => {
     try {
       console.log('AuthContext: Attempting to register user with email:', email);
-      await authService.register({ name, email, password, role_id: 2 });
+      await authService.register({ name, email, password });
     } catch (error) {
       console.error('AuthContext: Registration failed:', error);
       const message = error instanceof Error ? error.message : 'An unexpected error occurred';
