@@ -86,7 +86,8 @@ export default {
     },
     eas: {
       projectId: "fd631fd1-eadf-4299-ae85-1d055bed0dd4"
-    }
+    },
+    useMockData: process.env.USE_MOCK_DATA === 'true'
   },
   runtimeVersion: "1.0.0",
   updates: {

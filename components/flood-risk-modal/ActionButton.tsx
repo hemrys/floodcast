@@ -18,7 +18,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
     const normalizedLevel = level.toLowerCase();
     if (normalizedLevel === 'high') return 'bg-red-500';
     if (normalizedLevel === 'medium') return 'bg-orange-500';
-    if (normalizedLevel === 'low') return 'bg-yellow-500';
+    if (normalizedLevel === 'low') return 'bg-yellow-500 ';
     return 'bg-blue-600';
   };
 
@@ -34,10 +34,10 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
         <Ionicons
           name={iconName}
           size={20}
-          color="black"
+          color="white"
           style={{ marginRight: 8 }}
         />
-        <Text className="text-black/80 text-lg font-extrabold">{label}</Text>
+        <Text className="text-white text-lg font-extrabold">{label}</Text>
       </View>
     </TouchableOpacity>
   );

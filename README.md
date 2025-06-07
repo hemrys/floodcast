@@ -13,6 +13,9 @@
 ##!IMPORTANT
 - When trying the app from console press s after bun s to use expo go, dev build will not work. 
 
+##!IMPORTANT
+-Now set to use mock data by default, to use live data set USE_MOCK_DATA=false in .env file and restart the app fully (not just reload)
+
 
 ## 📱 Project Overview
 

@@ -2,6 +2,7 @@ import { FloodRiskArea } from '@/types';
 import { floodRiskAreas as mockData } from '@/data/floodRiskData';
 import { FLOOD_RISK_RADIUS } from '@/constants/FloodRiskConstants';
 import { apiRequest } from '@/utils/apiClient';
+import { DATA_CONFIG } from '@/constants/DataConfig';
 
 // Types
 interface SensorData {
@@ -116,6 +117,10 @@ function extractWaterLevelData(response: WaterLevelResponse): WaterLevelData[] {
 
 // Exported functions - no unnecessary service wrapper
 export async function getFloodRisks(): Promise<FloodRiskArea[]> {
+  if (DATA_CONFIG.USE_MOCK_DATA) {
+    return mockData;
+  }
+
   const sensorsResponse = await apiRequest<SensorResponse>('GET', '/api/sensors');
   const waterLevelsResponse = await apiRequest<WaterLevelResponse>('GET', '/api/sensors/waterlevels');
 
@@ -131,6 +136,10 @@ export async function getFloodRisks(): Promise<FloodRiskArea[]> {
 }
 
 export async function getFloodRiskById(id: number): Promise<FloodRiskArea | null> {
+  if (DATA_CONFIG.USE_MOCK_DATA) {
+    return mockData.find(risk => risk.id === id) || null;
+  }
+
   try {
     const sensorResponse = await apiRequest<SensorResponse>('GET', `/api/sensors/${id}`);
     const sensor = sensorResponse.sensor;
@@ -143,8 +152,11 @@ export async function getFloodRiskById(id: number): Promise<FloodRiskArea | null
 
     return processFloodRiskData(sensor, sensorWaterLevel);
   } catch (error) {
-    const mockRisk = mockData.find(risk => risk.id === id);
-    return mockRisk || null;
+    if (DATA_CONFIG.FALLBACK_TO_MOCK_ON_ERROR) {
+      const mockRisk = mockData.find(risk => risk.id === id);
+      return mockRisk || null;
+    }
+    return null;
   }
 }
 

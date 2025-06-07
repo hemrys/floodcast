@@ -33,12 +33,12 @@ export const RiskHeader: React.FC<RiskHeaderProps> = ({ title, riskLevel, onClos
   return (
     <View className={`p-4 flex-row justify-between items-center ${getBgColor(riskLevel)}`}>
       <View className="flex-row items-center">
-        {/* <Text className="text-2xl font-extrabold text-white mr-2 "></Text> */}
-        <View className="px-2 py-1 bg-black/80 rounded-full">
+        <Text className="text-2xl font-extrabold text-white mr-2 ">{title}</Text>
+        {/* <View className="px-2 py-1 bg-black/80 rounded-full">
           <Text className={`text-lg font-bold ${getTextColor(riskLevel)} uppercase`}>
             {getRiskLevelLabel(riskLevel)}
           </Text>
-        </View>
+        </View> */}
       </View>
       <TouchableOpacity
         onPress={onClose}

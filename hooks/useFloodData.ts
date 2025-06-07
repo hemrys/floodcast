@@ -3,6 +3,7 @@ import { floodRiskAreas as mockData } from '@/data/floodRiskData';
 import { getFloodRisks, getFloodRiskById} from '@/services/floodRiskService';
 import { showAlert } from '@/utils/alert';
 import { FloodRiskArea } from '@/types';
+import { DATA_CONFIG } from '@/constants/DataConfig';
 
 export function useFloodData() {
   const [data, setData] = useState<FloodRiskArea[]>([]);
@@ -13,6 +14,12 @@ export function useFloodData() {
     setLoading(true);
     setError(null);
 
+    if (DATA_CONFIG.USE_MOCK_DATA) {
+      setData(mockData);
+      setLoading(false);
+      return;
+    }
+
     try {
       const floodRisks = await getFloodRisks();
       setData(floodRisks);
@@ -20,20 +27,28 @@ export function useFloodData() {
       const errorMessage = "Failed to fetch flood risk data";
       setError(errorMessage);
 
-      // Show user-friendly message and fall back to mock data
-      showAlert("Couldn't load flood data", "Using offline data instead", "warning");
-      setData(mockData);
+      if (DATA_CONFIG.FALLBACK_TO_MOCK_ON_ERROR) {
+        showAlert("Couldn't load flood data", "Using offline data instead", "warning");
+        setData(mockData);
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   const fetchFloodRiskById = useCallback(async (id: number) => {
+    if (DATA_CONFIG.USE_MOCK_DATA) {
+      return mockData.find(risk => risk.id === id) || null;
+    }
+
     try {
       return await getFloodRiskById(id);
     } catch (err) {
-      showAlert("Error", `Failed to fetch flood risk with ID ${id}.`, "error");
-      return mockData.find(risk => risk.id === id) || null;
+      if (DATA_CONFIG.FALLBACK_TO_MOCK_ON_ERROR) {
+        showAlert("Error", `Failed to fetch flood risk with ID ${id}.`, "error");
+        return mockData.find(risk => risk.id === id) || null;
+      }
+      return null;
     }
   }, []);
 
