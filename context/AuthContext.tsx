@@ -20,19 +20,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const redirectToLogin = () => {
-    if (router.canGoBack()) {
-      router.replace('/login');
-    }
-  };
-
   const resetAuthState = async () => {
     await clearAuthToken();
     setIsAuthenticated(false);
     setCurrentUser(null);
   };
 
-  // Check authentication status on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -41,7 +34,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (!token) {
           await resetAuthState();
-          redirectToLogin();
           return;
         }
 
@@ -58,7 +50,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setIsAuthenticated(true);
         } else {
           await resetAuthState();
-          redirectToLogin();
         }
       } catch (error) {
         console.error('Auth check error:', error);
@@ -66,8 +57,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (error instanceof ApiError && error.status === 401) {
           await resetAuthState();
         }
-
-        redirectToLogin();
       } finally {
         setIsLoading(false);
       }
@@ -98,6 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       setIsAuthenticated(true);
       setCurrentUser(user);
+      router.replace('/(tabs)');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed';
       showAlert('Login Failed', message, 'error');
@@ -108,6 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const register = async (name: string, email: string, password: string) => {
     try {
       await apiRequest('POST', '/register', { name, email, password });
+      router.replace('/login');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Registration failed';
       showAlert('Registration Failed', message, 'error');

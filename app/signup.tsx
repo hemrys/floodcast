@@ -46,7 +46,6 @@ export default function SignupScreen() {
       setIsLoading(true);
       await register(name, email, password);
       showAlert('Registration Successful', 'Your account has been created. Please log in.', 'success');
-      router.replace('/login');
     } catch (error) {
       console.error('Registration failed:', error);
     } finally {

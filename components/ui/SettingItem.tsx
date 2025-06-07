@@ -18,14 +18,14 @@ export const SettingItem = ({ icon, title, description, control }: SettingItemPr
     </View>
     <View className="flex-1">
       <Text
-        className="text-base font-medium text-gray-800 dark:text-gray-200"
+        className="text-lg font-medium text-gray-800 dark:text-gray-200"
         accessibilityRole="text"
       >
         {title}
       </Text>
       {description && (
         <Text
-          className="text-sm text-gray-500 dark:text-gray-400"
+          className="text-base text-gray-500 dark:text-gray-400"
           accessibilityRole="text"
         >
           {description}

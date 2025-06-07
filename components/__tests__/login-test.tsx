@@ -82,7 +82,7 @@ describe("LoginScreen", () => {
     expect(mockLogin).toHaveBeenCalledWith("test@example.com", "password123");
   });
 
-  it("navigates to home screen on successful login", async () => {
+  it("calls login function on successful form submission", async () => {
     mockLogin.mockResolvedValue(undefined);
 
     const { getByText, getByPlaceholderText } = render(<LoginScreen />);
@@ -93,7 +93,7 @@ describe("LoginScreen", () => {
     fireEvent.press(getByText("Sign In"));
 
     await waitFor(() => {
-      expect(router.replace).toHaveBeenCalledWith("/(tabs)");
+      expect(mockLogin).toHaveBeenCalledWith("test@example.com", "password123");
     });
   });
 

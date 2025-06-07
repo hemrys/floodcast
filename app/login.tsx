@@ -19,7 +19,8 @@ export default function LoginScreen() {
   const isDark = colorScheme === "dark";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const [isGuestLoading, setIsGuestLoading] = useState(false);
   const { login } = useAuth();
 
   const handleLogin = async () => {
@@ -29,13 +30,23 @@ export default function LoginScreen() {
     }
 
     try {
-      setIsLoading(true);
+      setIsLoginLoading(true);
       await login(email, password);
-      router.replace("/(tabs)");
     } catch (error) {
       console.error("Login failed:", error);
     } finally {
-      setIsLoading(false);
+      setIsLoginLoading(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    try {
+      setIsGuestLoading(true);
+      await login("alice@example.com", "securepassword1");
+    } catch (error) {
+      console.error("Guest login failed:", error);
+    } finally {
+      setIsGuestLoading(false);
     }
   };
 
@@ -99,7 +110,7 @@ export default function LoginScreen() {
           <TouchableOpacity
             className="rounded-xl overflow-hidden"
             onPress={handleLogin}
-            disabled={isLoading}
+            disabled={isLoginLoading}
             accessibilityLabel="Sign in button"
             accessibilityHint="Tap to sign in with your email and password"
             accessibilityRole="button"
@@ -110,12 +121,33 @@ export default function LoginScreen() {
               end={{ x: 1, y: 0 }}
               className="py-3 px-4 items-center"
             >
-              {isLoading ? (
+              {isLoginLoading ? (
                 <ActivityIndicator color="white" />
               ) : (
                 <Text className="text-white font-medium text-lg">Sign In</Text>
               )}
             </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className={`rounded-xl mt-4 py-3 px-4 items-center ${
+              isDark ? "bg-white" : "bg-gray-900"
+            }`}
+            onPress={handleGuestLogin}
+            disabled={isGuestLoading}
+            accessibilityLabel="Continue as guest"
+            accessibilityHint="Tap to sign in with demo credentials without creating an account"
+            accessibilityRole="button"
+          >
+            {isGuestLoading ? (
+              <ActivityIndicator color={isDark ? "#1f2937" : "white"} />
+            ) : (
+              <Text className={`font-medium text-lg ${
+                isDark ? "text-gray-900" : "text-white"
+              }`}>
+                Continue as Guest
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
 

@@ -38,7 +38,7 @@ export default function SettingsScreen() {
     <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
       <ScrollView className="flex-1 px-4">
         <View className="mb-6 mt-2">
-          <Text className="text-3xl font-bold text-gray-900 dark:text-white">Settings</Text>
+          <Text className="text-4xl font-bold text-gray-900 dark:text-white">Settings</Text>
         </View>
 
         <View className="mb-6">
@@ -104,10 +104,10 @@ export default function SettingsScreen() {
         <View className="mb-6">
           <SectionHeader title="About" />
           <View className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-            <Text className="text-base text-gray-800 dark:text-gray-200 font-medium">
+            <Text className="text-lg text-gray-800 dark:text-gray-200 font-medium">
               FloodCast v1.0.0
             </Text>
-            <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <Text className="text-base text-gray-500 dark:text-gray-400 mt-1">
               Current theme: {isDarkMode ? 'Dark' : 'Light'}
             </Text>
             <TouchableOpacity
@@ -116,7 +116,7 @@ export default function SettingsScreen() {
               accessibilityHint="Tap to check if there are any app updates available"
               accessibilityRole="button"
             >
-              <Text className="text-modern-purple">Check for updates</Text>
+              <Text className="text-lg text-modern-purple">Check for updates</Text>
             </TouchableOpacity>
           </View>
         </View>
