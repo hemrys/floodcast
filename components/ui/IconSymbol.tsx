@@ -18,6 +18,7 @@ const MAPPING = {
   'magnifyingglass': 'search',
   'xmark': 'close',
   'rectangle.portrait.and.arrow.right': 'logout',
+  'book.fill': 'menu-book',
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
