@@ -4,7 +4,6 @@ import { FLOOD_RISK_RADIUS } from '@/constants/FloodRiskConstants';
 import { apiRequest } from '@/utils/apiClient';
 import { DATA_CONFIG } from '@/constants/DataConfig';
 
-// Types
 interface SensorData {
   id: number;
   installation_date: string;

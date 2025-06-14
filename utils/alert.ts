@@ -1,9 +1,6 @@
 import { useNotificationStore, AlertData } from '@/store/useNotificationStore';
 
-/**
- * Utility function to show custom alerts throughout the application
- * This replaces the default Alert.alert from React Native
- */
+// Utility function to show custom alerts throughout the application
 export const showAlert = (
   title: string,
   message: string,
